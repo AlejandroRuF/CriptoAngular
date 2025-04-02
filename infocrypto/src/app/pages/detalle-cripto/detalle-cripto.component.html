@@ -1,5 +1,10 @@
 <div class="detalle-container" *ngIf="!cargando && cripto">
   <div class="card">
+    <div class="volver">
+      <button mat-raised-button color="accent" routerLink="/">
+        ← Volver a la lista
+      </button>
+    </div>
     <img [src]="cripto.image.large" [alt]="cripto.name" class="logo" />
 
     <h2>{{ cripto.name }} <span class="symbol">({{ cripto.symbol.toUpperCase() }})</span></h2>
@@ -11,6 +16,19 @@
       <h3>Descripción</h3>
       <div [innerHTML]="cripto.description.es || cripto.description.en"></div>
     </div>
+
+    <div style="display: block; margin-top: 2rem;">
+      <h3 style="text-align: center;">Precio últimos 7 días</h3>
+      <canvas baseChart
+              [data]="lineChartData"
+              [labels]="lineChartLabels"
+              [options]="lineChartOptions"
+              [legend]="lineChartLegend"
+              [type]="'line'">
+      </canvas>
+    </div>
+
+
   </div>
 </div>
 
