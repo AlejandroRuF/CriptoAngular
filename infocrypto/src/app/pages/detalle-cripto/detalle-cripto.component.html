@@ -1,0 +1,17 @@
+<div class="detalle-container" *ngIf="!cargando && cripto">
+  <div class="card">
+    <img [src]="cripto.image.large" [alt]="cripto.name" class="logo" />
+
+    <h2>{{ cripto.name }} <span class="symbol">({{ cripto.symbol.toUpperCase() }})</span></h2>
+
+    <p class="ranking">Ranking: #{{ cripto.market_cap_rank }}</p>
+    <p class="precio">Precio actual: {{ cripto.market_data.current_price.eur | currency:'EUR' }}</p>
+
+    <div class="descripcion">
+      <h3>Descripción</h3>
+      <div [innerHTML]="cripto.description.es || cripto.description.en"></div>
+    </div>
+  </div>
+</div>
+
+<p *ngIf="cargando" class="cargando">Cargando detalles...</p>
