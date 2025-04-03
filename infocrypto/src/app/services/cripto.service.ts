@@ -25,7 +25,7 @@ export class CriptoService {
   }
 
   getDetalleCripto(id: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/coins/${id}`, {
+    return this.http.get(`https://api.coingecko.com/api/v3/coins/${id}`, {
       params: {
         localization: 'false',
         tickers: 'false',

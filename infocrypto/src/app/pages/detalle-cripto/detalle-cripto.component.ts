@@ -93,34 +93,34 @@ export class DetalleCriptoComponent implements OnInit {
     }
   }
 
-  // cargarGrafico(rango: string) {
-  //   this.rangoSeleccionado = rango;
-  //
-  //   this.http.get(`https://api.coingecko.com/api/v3/coins/${this.id}/market_chart?vs_currency=eur&days=${rango}`)
-  //     .subscribe((res: any) => {
-  //       const { labels, data } = this.formatearDatos(res.prices, rango);
-  //
-  //       this.lineChartData.labels = labels;
-  //       this.lineChartData.datasets[0].data = data;
-  //
-  //       this.chart?.update(); // 👈 fuerza render del gráfico
-  //       this.cargando = false;
-  //     });
-  // }
-
   cargarGrafico(rango: string) {
     this.rangoSeleccionado = rango;
 
-    this.criptoService.getHistorialPrecios(this.id, rango).subscribe((res: any) => {
-      const { labels, data } = this.formatearDatos(res.prices, rango);
+    this.http.get(`https://api.coingecko.com/api/v3/coins/${this.id}/market_chart?vs_currency=eur&days=${rango}`)
+      .subscribe((res: any) => {
+        const { labels, data } = this.formatearDatos(res.prices, rango);
 
-      this.lineChartData.labels = labels;
-      this.lineChartData.datasets[0].data = data;
+        this.lineChartData.labels = labels;
+        this.lineChartData.datasets[0].data = data;
 
-      this.chart?.update(); // fuerza render del gráfico
-      this.cargando = false;
-    });
+        this.chart?.update(); // 👈 fuerza render del gráfico
+        this.cargando = false;
+      });
   }
+
+  // cargarGrafico(rango: string) {
+  //   this.rangoSeleccionado = rango;
+  //
+  //   this.criptoService.getHistorialPrecios(this.id, rango).subscribe((res: any) => {
+  //     const { labels, data } = this.formatearDatos(res.prices, rango);
+  //
+  //     this.lineChartData.labels = labels;
+  //     this.lineChartData.datasets[0].data = data;
+  //
+  //     this.chart?.update(); // fuerza render del gráfico
+  //     this.cargando = false;
+  //   });
+  // }
 
   getTextoRango(): string {
     switch (this.rangoSeleccionado) {
