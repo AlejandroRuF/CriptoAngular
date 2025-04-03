@@ -7,6 +7,7 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartDataset} from 'chart.js';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import { ChartOptions } from 'chart.js';
+import {CriptoService} from '../../services/cripto.service';
 
 
 
@@ -72,37 +73,53 @@ export class DetalleCriptoComponent implements OnInit {
 
 
   constructor(
+    private criptoService: CriptoService,
     private route: ActivatedRoute,
     private http: HttpClient
   ){}
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id') ?? '';
-
-    // Llamada a la API para info general de la cripto
-    this.http.get(`https://api.coingecko.com/api/v3/coins/${this.id}`)
-      .subscribe({
+    if (this.id) {
+      this.criptoService.getDetalleCripto(this.id).subscribe({
         next: (data) => {
           this.cripto = data;
-
           this.cargarGrafico(this.rangoSeleccionado);
+        },
+        error: (err) => {
+          console.error('Error al cargar detalles de la cripto:', err);
         }
       });
+    }
   }
+
+  // cargarGrafico(rango: string) {
+  //   this.rangoSeleccionado = rango;
+  //
+  //   this.http.get(`https://api.coingecko.com/api/v3/coins/${this.id}/market_chart?vs_currency=eur&days=${rango}`)
+  //     .subscribe((res: any) => {
+  //       const { labels, data } = this.formatearDatos(res.prices, rango);
+  //
+  //       this.lineChartData.labels = labels;
+  //       this.lineChartData.datasets[0].data = data;
+  //
+  //       this.chart?.update(); // 👈 fuerza render del gráfico
+  //       this.cargando = false;
+  //     });
+  // }
 
   cargarGrafico(rango: string) {
     this.rangoSeleccionado = rango;
 
-    this.http.get(`https://api.coingecko.com/api/v3/coins/${this.id}/market_chart?vs_currency=eur&days=${rango}`)
-      .subscribe((res: any) => {
-        const { labels, data } = this.formatearDatos(res.prices, rango);
+    this.criptoService.getHistorialPrecios(this.id, rango).subscribe((res: any) => {
+      const { labels, data } = this.formatearDatos(res.prices, rango);
 
-        this.lineChartData.labels = labels;
-        this.lineChartData.datasets[0].data = data;
+      this.lineChartData.labels = labels;
+      this.lineChartData.datasets[0].data = data;
 
-        this.chart?.update(); // 👈 fuerza render del gráfico
-        this.cargando = false;
-      });
+      this.chart?.update(); // fuerza render del gráfico
+      this.cargando = false;
+    });
   }
 
   getTextoRango(): string {
