@@ -1,2 +1,19 @@
 
+<div class="toolbar">
+  <button class="theme-toggle" mat-icon-button (click)="alternarTema()" [matTooltip]="'Cambiar tema'">
+    <mat-icon class="theme-icon">{{ modoOscuro ? 'dark_mode' : 'light_mode' }}</mat-icon>
+  </button>
+
+  <span class="spacer"></span>
+
+  <button mat-flat-button color="accent" routerLink="/">
+    <mat-icon>home</mat-icon> Home
+  </button>
+
+  <button mat-flat-button color="warn" routerLink="/favoritos">
+    <mat-icon>star</mat-icon> Ver favoritos
+  </button>
+</div>
+
+
 <router-outlet />

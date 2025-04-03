@@ -1,34 +1,48 @@
-<div class="detalle-container" *ngIf="!cargando && cripto">
+<div class="detalle-container">
   <div class="card">
-    <div class="volver">
-      <button mat-raised-button color="accent" routerLink="/">
-        ← Volver a la lista
-      </button>
-    </div>
-    <img [src]="cripto.image.large" [alt]="cripto.name" class="logo" />
-
-    <h2>{{ cripto.name }} <span class="symbol">({{ cripto.symbol.toUpperCase() }})</span></h2>
-
-    <p class="ranking">Ranking: #{{ cripto.market_cap_rank }}</p>
-    <p class="precio">Precio actual: {{ cripto.market_data.current_price.eur | currency:'EUR' }}</p>
-
-    <div class="descripcion">
-      <h3>Descripción</h3>
-      <div [innerHTML]="cripto.description.es || cripto.description.en"></div>
+    <div *ngIf="cargando" style="display: flex; justify-content: center; margin-top: 2rem;">
+      <mat-spinner></mat-spinner>
     </div>
 
-    <div style="display: block; margin-top: 2rem;">
-      <h3 style="text-align: center;">Precio últimos 7 días</h3>
-      <canvas baseChart
-              [data]="lineChartData"
-              [options]="lineChartOptions"
-              [legend]="lineChartLegend"
-              [type]="'line'">
-      </canvas>
+    <div *ngIf="!cargando && cripto" class="card-header">
+      <h1>Detalles de {{ cripto.name }}</h1>
+      <div class="volver">
+        <button mat-raised-button color="accent" routerLink="/">
+          ← Volver a la lista
+        </button>
+      </div>
+      <img [src]="cripto.image.large" [alt]="cripto.name" class="logo" />
+
+      <h2>{{ cripto.name }} <span class="symbol">({{ cripto.symbol.toUpperCase() }})</span></h2>
+
+      <p class="ranking">Ranking: #{{ cripto.market_cap_rank }}</p>
+      <p class="precio">Precio actual: {{ cripto.market_data.current_price.eur | currency:'EUR' }}</p>
+
+      <div class="descripcion">
+        <h3>Descripción</h3>
+        <div [innerHTML]="cripto.description.es || cripto.description.en"></div>
+      </div>
+
+      <div class="rango-selector">
+
+        <button mat-button (click)="cargarGrafico('1')" [disabled]="rangoSeleccionado === '1'">1 Día</button>
+        <button mat-button (click)="cargarGrafico('7')" [disabled]="rangoSeleccionado === '7'">7 Días</button>
+        <button mat-button (click)="cargarGrafico('30')" [disabled]="rangoSeleccionado === '30'">1 Mes</button>
+        <button mat-button (click)="cargarGrafico('365')" [disabled]="rangoSeleccionado === '365'">1 Año</button>
+
+      </div>
+
+      <div style="display: block; margin-top: 2rem;">
+        <h3 style="text-align: center;">{{getTextoRango()}}</h3>
+        <canvas baseChart
+                [data]="lineChartData"
+                [options]="lineChartOptions"
+                [legend]="lineChartLegend"
+                [type]="'line'">
+        </canvas>
+      </div>
+
     </div>
-
-
   </div>
 </div>
 
-<p *ngIf="cargando" class="cargando">Cargando detalles...</p>

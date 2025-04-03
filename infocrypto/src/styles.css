@@ -1,4 +1,122 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Tema oscuro global */
+.dark-theme {
+  color-scheme: dark;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+/* Botones */
+.dark-theme .mat-mdc-button,
+.dark-theme .mat-mdc-raised-button,
+.dark-theme .mat-mdc-outlined-button {
+  background-color: #1f1f1f;
+  color: #fff;
+  border-color: #444;
+}
+
+.dark-theme .mat-mdc-raised-button.mat-primary {
+  background-color: #2e2e2e !important;
+  color: white !important;
+}
+.dark-theme .mat-mdc-raised-button.mat-primary:hover {
+  background-color: #3e3e3e !important;
+}
+.dark-theme .mat-mdc-raised-button.mat-accent {
+  background-color: #3a3a3a !important;
+  color: white !important;
+}
+
+/* Inputs */
+.dark-theme .mat-mdc-form-field,
+.dark-theme .mat-mdc-input-element {
+  background-color: #1f1f1f;
+  color: white;
+}
+.dark-theme .mat-mdc-form-field-label {
+  color: #ccc;
+}
+.dark-theme input.mat-mdc-input-element {
+  background-color: #2c2c2c;
+  color: white;
+}
+.dark-theme input[type="text"] {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #444 !important;
+}
+.dark-theme input[type="text"]::placeholder {
+  color: #aaa;
+}
+
+/* Tabla */
+.dark-theme .mat-mdc-table {
+  background-color: transparent;
+  color: #ffffff;
+}
+.dark-theme .mat-mdc-row,
+.dark-theme .mat-mdc-cell,
+.dark-theme .mat-mdc-header-cell {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border-bottom: 1px solid #333;
+}
+.dark-theme .mat-mdc-header-row {
+  background-color: #121212;
+}
+.dark-theme .mat-mdc-row:hover {
+  background-color: #2a2a2a;
+}
+
+/* Paginador */
+.dark-theme .mat-mdc-paginator {
+  background-color: #121212;
+  color: white;
+  border-top: 1px solid #2c2c2c;
+}
+.dark-theme .mat-mdc-select,
+.dark-theme .mat-mdc-select-trigger {
+  color: white;
+  background-color: #2a2a2a;
+}
+.dark-theme .mat-mdc-option {
+  background-color: #2a2a2a;
+  color: white;
+}
+.dark-theme .mat-mdc-option:hover {
+  background-color: #3a3a3a;
+}
+
+/* Spinner */
+.dark-theme .mat-mdc-progress-spinner circle {
+  stroke: white;
+}
+
+/* Tarjetas y fondos */
+.dark-theme .table-container {
+  background-color: #1a1a1a;
+  padding: 1rem;
+  border-radius: 12px;
+}
+.dark-theme .card {
+  background-color: #1e1e1e !important;
+  color: white;
+}
+
+/* Títulos */
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3,
+.dark-theme h4 {
+  color: white;
+}
+
+/* Fondo general para componente lista-cripto */
+.dark-theme app-lista-cripto {
+  background-color: #121212 !important;
+}

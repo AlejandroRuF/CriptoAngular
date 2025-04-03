@@ -1,10 +1,10 @@
 <h2>Top Criptomonedas</h2>
 
 <input
-type="text"
-placeholder="Buscar Criptomonedas..."
-(keyup)="aplicarFiltro($event)"
-style="
+  type="text"
+  placeholder="Buscar Criptomonedas..."
+  (keyup)="aplicarFiltro($event)"
+  style="
   margin-bottom: 1rem;
   padding: 0.5rem 1rem;
   width: 100%; max-width:400px;
@@ -13,59 +13,120 @@ style="
 >
 
 <div class="table-container">
-<table mat-table [dataSource]="criptos" class="mat-elevation-z2" *ngIf="!cargando">
 
-  <ng-container matColumnDef="image">
-    <th mat-header-cell *matHeaderCellDef></th>
-    <td mat-cell *matCellDef="let cripto">
-      <img [src]="cripto.image" alt="{{cripto.name}}" width="24"/>
-    </td>
-  </ng-container>
+  <div style="width: 100%; display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+    <button mat-raised-button color="primary" (click)="alternarVista()">
+      Cambiar a vista {{ modoCard ? 'Tabla' : 'Tarjetas' }}
+    </button>
+  </div>
 
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef>Nombre</th>
-    <td mat-cell *matCellDef="let cripto">
-      <strong>{{cripto.name}}</strong> ({{cripto.symbol.toUpperCase()}})
-    </td>
-  </ng-container>
 
-  <ng-container matColumnDef="price">
-    <th mat-header-cell *matHeaderCellDef> Precio </th>
-    <td mat-cell *matCellDef="let cripto">
-      {{ cripto.current_price | currency:'EUR' }}
-    </td>
-  </ng-container>
 
-  <ng-container matColumnDef="change">
-    <th mat-header-cell *matHeaderCellDef> Variación 24h </th>
-    <td mat-cell *matCellDef="let cripto">
+
+  <div *ngIf="!cargando && modoCard" class="card-grid">
+    <mat-card class="cripto-card" *ngFor="let cripto of buscando? tarjetasFiltradas : tarjetasMostradas">
+
+      <mat-card-header>
+        <div mat-card-avatar class="cripto-avatar">
+          <img [src]="cripto.image" alt="{{cripto.name}}" />
+        </div>
+        <button mat-icon-button color="warn" (click)="alternarFavorito(cripto.id)">
+          <mat-icon>
+            {{ esFavorito(cripto.id) ? 'star' : 'star_border' }}
+          </mat-icon>
+        </button>
+        <mat-card-title>{{cripto.name}}</mat-card-title>
+        <mat-card-subtitle>{{cripto.symbol.toUpperCase()}}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p><strong>💶 {{ cripto.current_price | currency:'EUR' }}</strong></p>
+        <p [ngClass]="cripto.price_change_percentage_24h >= 0 ? 'subida' : 'bajada'">
+          {{ cripto.price_change_percentage_24h | number:'1.2-2' }} %
+        </p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-button color="primary" [routerLink]="['/detalle', cripto.id]">
+          Ver más <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!cargando && !modoCard">
+    <table mat-table [dataSource]="criptos" class="mat-elevation-z2" >
+
+      <ng-container matColumnDef="image">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let cripto">
+          <button mat-icon-button color="warn" (click)="alternarFavorito(cripto.id)">
+            <mat-icon>
+              {{ esFavorito(cripto.id) ? 'star' : 'star_border' }}
+            </mat-icon>
+          </button>
+          <img [src]="cripto.image" alt="{{cripto.name}}" width="24"/>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let cripto">
+          <strong>{{cripto.name}}</strong> ({{cripto.symbol.toUpperCase()}})
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef> Precio </th>
+        <td mat-cell *matCellDef="let cripto">
+          {{ cripto.current_price | currency:'EUR' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="change">
+        <th mat-header-cell *matHeaderCellDef> Variación 24h </th>
+        <td mat-cell *matCellDef="let cripto">
       <span [style.color]="cripto.price_change_percentage_24h >= 0 ? 'green' : 'red'">
         {{ cripto.price_change_percentage_24h | number:'1.2-2' }} %
       </span>
-    </td>
-  </ng-container>
+        </td>
+      </ng-container>
 
-  <ng-container matColumnDef="acciones">
-    <th mat-header-cell *matHeaderCellDef> Acciones </th>
-    <td mat-cell *matCellDef="let cripto">
-      <button mat-raised-button
-              color="primary"
-              [routerLink]="['/detalle', cripto.id]"
-              class="mat-body-2">
-        Ver más
-        <mat-icon class="mat-icon-14">arrow_forward_ios</mat-icon>
-      </button>
-    </td>
-  </ng-container>
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+        <td mat-cell *matCellDef="let cripto">
+          <button mat-raised-button
+                  color="primary"
+                  [routerLink]="['/detalle', cripto.id]"
+                  class="mat-body-2">
+            Ver más
+            <mat-icon class="mat-icon-14">arrow_forward_ios</mat-icon>
+          </button>
+        </td>
+      </ng-container>
 
-  <!-- Encabezados y filas -->
-  <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-  <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
-</table>
+      <!-- Encabezados y filas -->
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
 
-<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+
+    <div *ngIf="cargando" style="display: flex; justify-content: center; margin-top: 2rem;">
+      <mat-spinner></mat-spinner>
+    </div>
+  </div>
+  <mat-paginator
+    [pageSizeOptions]="[ 10, 15, 20]"
+    [pageSize]="10"
+    showFirstLastButtons *ngIf="!modoCard">
+  </mat-paginator>
+  <div class="spinner-scroll" *ngIf="modoCard && cargandoMasTarjetas && tarjetasMostradas.length < tarjetasFiltradas.length">
+    <mat-spinner diameter="60"></mat-spinner>
+  </div>
 </div>
-<p  *ngIf="cargando">Cargando...</p>
+
+<div (window:scroll)="onScroll()" style="height: 1px;"></div>
+
 
 <!--<ul *ngIf="!cargando">-->
 
