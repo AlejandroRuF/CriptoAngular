@@ -55,10 +55,9 @@ export class ListaCriptoComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.obtenerModoGuardado();
-    this.cargarCriptos();
-    this.cargarFavoritos();
     this.esFavoritos = this.route.snapshot.routeConfig?.path === 'favoritos';
-
+    this.cargarFavoritos();
+    this.cargarCriptos();
   }
 
   ngAfterViewInit(): void {

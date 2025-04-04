@@ -108,3 +108,8 @@ h2 {
 :host-context(.dark-theme) .rango-selector button[disabled] {
   color: #90caf9;
 }
+
+.info-extra-card {
+  margin-top: 16px;
+  padding: 16px;
+}

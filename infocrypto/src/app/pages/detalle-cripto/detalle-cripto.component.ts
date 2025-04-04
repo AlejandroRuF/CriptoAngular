@@ -8,23 +8,23 @@ import { ChartData, ChartDataset} from 'chart.js';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import { ChartOptions } from 'chart.js';
 import {CriptoService} from '../../services/cripto.service';
-
-
-
-
-
+import {CriptoDetalle} from '../../models/cripto-detalle.interface';
+import { CriptoGrafica } from '../../models/cripto-grafica.interface';
+import { Location } from '@angular/common';
+import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
 
 
 @Component({
   selector: 'app-detalle-cripto',
-  imports: [CommonModule, MatButtonModule, RouterLink, BaseChartDirective, MatProgressSpinner,],
+  imports: [CommonModule, MatButtonModule, RouterLink, BaseChartDirective, MatProgressSpinner, MatCard, MatCardTitle, MatCardContent,],
   templateUrl: './detalle-cripto.component.html',
   styleUrls: ['./detalle-cripto.component.css']
 
 })
 export class DetalleCriptoComponent implements OnInit {
   id: string = '';
-  cripto: any;
+  cripto!: CriptoDetalle;
+  criptoGrafica!: CriptoGrafica;
   cargando: boolean = true;
   lineChartData: ChartData<'line'> = {
     labels: [],
@@ -75,14 +75,14 @@ export class DetalleCriptoComponent implements OnInit {
   constructor(
     private criptoService: CriptoService,
     private route: ActivatedRoute,
-    private http: HttpClient
+    private location: Location,
   ){}
 
   ngOnInit(): void {
     this.id = this.route.snapshot.paramMap.get('id') ?? '';
     if (this.id) {
       this.criptoService.getDetalleCripto(this.id).subscribe({
-        next: (data) => {
+        next: (data: CriptoDetalle) => {
           this.cripto = data;
           this.cargarGrafico(this.rangoSeleccionado);
         },
@@ -93,34 +93,34 @@ export class DetalleCriptoComponent implements OnInit {
     }
   }
 
-  cargarGrafico(rango: string) {
-    this.rangoSeleccionado = rango;
-
-    this.http.get(`https://api.coingecko.com/api/v3/coins/${this.id}/market_chart?vs_currency=eur&days=${rango}`)
-      .subscribe((res: any) => {
-        const { labels, data } = this.formatearDatos(res.prices, rango);
-
-        this.lineChartData.labels = labels;
-        this.lineChartData.datasets[0].data = data;
-
-        this.chart?.update(); // 👈 fuerza render del gráfico
-        this.cargando = false;
-      });
-  }
-
   // cargarGrafico(rango: string) {
   //   this.rangoSeleccionado = rango;
   //
-  //   this.criptoService.getHistorialPrecios(this.id, rango).subscribe((res: any) => {
-  //     const { labels, data } = this.formatearDatos(res.prices, rango);
+  //   this.http.get(`https://api.coingecko.com/api/v3/coins/${this.id}/market_chart?vs_currency=eur&days=${rango}`)
+  //     .subscribe((res: any) => {
+  //       const { labels, data } = this.formatearDatos(res.prices, rango);
   //
-  //     this.lineChartData.labels = labels;
-  //     this.lineChartData.datasets[0].data = data;
+  //       this.lineChartData.labels = labels;
+  //       this.lineChartData.datasets[0].data = data;
   //
-  //     this.chart?.update(); // fuerza render del gráfico
-  //     this.cargando = false;
-  //   });
+  //       this.chart?.update(); // 👈 fuerza render del gráfico
+  //       this.cargando = false;
+  //     });
   // }
+
+  cargarGrafico(rango: string) {
+    this.rangoSeleccionado = rango;
+
+    this.criptoService.getHistorialPrecios(this.id, rango).subscribe((res: CriptoGrafica) => {
+      const { labels, data } = this.formatearDatos(res.prices, rango);
+
+      this.lineChartData.labels = labels;
+      this.lineChartData.datasets[0].data = data;
+
+      this.chart?.update(); // fuerza render del gráfico
+      this.cargando = false;
+    });
+  }
 
   getTextoRango(): string {
     switch (this.rangoSeleccionado) {
@@ -157,4 +157,9 @@ export class DetalleCriptoComponent implements OnInit {
     }
     return { labels, data };
   }
+
+  volver() : void {
+    this.location.back();
+  }
+
 }
