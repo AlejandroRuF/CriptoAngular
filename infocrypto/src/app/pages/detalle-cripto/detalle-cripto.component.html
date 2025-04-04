@@ -23,18 +23,21 @@
         <div [innerHTML]="cripto.description.es || cripto.description.en"></div>
       </div>
 
-      <mat-card class="info-extra-card">
-        <mat-card-title>Informacion adicional</mat-card-title>
+      <mat-card class="info-extra-card mat-elevation-z3">
+        <mat-card-header>
+          <mat-card-title>Información adicional</mat-card-title>
+        </mat-card-header>
         <mat-card-content>
-          <p>Ranking: #{{cripto.market_cap_rank}}</p>
-          <p *ngIf="cripto.genesis_date">Creado en: {{cripto.genesis_date}}</p>
-          <p *ngIf="cripto.hashing_algorithm">Algoritmo: {{cripto.hashing_algorithm}}</p>
-          <p *ngIf="cripto.tickers?.length">Numero de exchanges: {{cripto.tickers?.length}}</p>
+          <p>Ranking: #{{ cripto.market_cap_rank }}</p>
+          <p *ngIf="cripto.genesis_date">Creado en: {{ cripto.genesis_date }}</p>
+          <p *ngIf="cripto.hashing_algorithm">Algoritmo: {{ cripto.hashing_algorithm }}</p>
+          <p *ngIf="cripto.tickers?.length">Exchanges disponibles: {{ cripto.tickers?.length }}</p>
           <p *ngIf="cripto.links?.homepage?.[0]">
-            Web oficial: <a [href]="cripto.links?.homepage?.[0]" target="_blank">{{cripto.links?.homepage?.[0]}}</a>
+            Web oficial: <a [href]="cripto.links?.homepage?.[0]" target="_blank">{{ cripto.links?.homepage?.[0] }}</a>
           </p>
         </mat-card-content>
       </mat-card>
+
 
       <div class="rango-selector">
 

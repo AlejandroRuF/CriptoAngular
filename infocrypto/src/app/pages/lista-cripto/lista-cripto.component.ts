@@ -10,6 +10,7 @@ import {MatButton, MatIconButton} from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, Router } from '@angular/router';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 @Component({
@@ -26,6 +27,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     MatIcon,
     MatCardModule,
     MatIconButton,
+    MatSnackBarModule,
   ],
   templateUrl: './lista-cripto.component.html',
   styleUrl: './lista-cripto.component.css'
@@ -50,7 +52,8 @@ export class ListaCriptoComponent implements OnInit, AfterViewInit {
   constructor(
     private criptoService: CriptoService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackbar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -124,6 +127,11 @@ export class ListaCriptoComponent implements OnInit, AfterViewInit {
       },
       error: (err) => {
         console.error('Error al cargar', err);
+        this.snackbar.open('Error al cargar los datos. Intentalo más tarde', 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
         this.cargando = false;
       }
     });
@@ -182,12 +190,21 @@ export class ListaCriptoComponent implements OnInit, AfterViewInit {
   }
 
   alternarFavorito(id:string): void {
+    let mensaje = '';
     if (this.favoritos.includes(id)) {
       this.favoritos = this.favoritos.filter(fav => fav !== id);
+      mensaje = `${id} eliminado de favoritos`;
     } else {
       this.favoritos.push(id);
+      mensaje = `${id} agregado a favoritos`;
+
     }
     this.guardarFavoritos();
+    this.snackbar.open(mensaje, 'Cerrar', {
+      duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+    });
   }
 
 }

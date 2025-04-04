@@ -4,11 +4,12 @@ import {ListaCriptoComponent} from './pages/lista-cripto/lista-cripto.component'
 import {MatAnchor, MatButton, MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {MatToolbar} from '@angular/material/toolbar';
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ListaCriptoComponent, MatButton, MatAnchor, RouterLink, MatIcon, MatTooltipModule, MatIconButton],
+  imports: [RouterOutlet, ListaCriptoComponent, MatButton, MatAnchor, RouterLink, MatIcon, MatTooltipModule, MatIconButton, MatToolbar],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -11,12 +11,14 @@ import {CriptoService} from '../../services/cripto.service';
 import {CriptoDetalle} from '../../models/cripto-detalle.interface';
 import { CriptoGrafica } from '../../models/cripto-grafica.interface';
 import { Location } from '@angular/common';
-import {MatCard, MatCardContent, MatCardTitle} from '@angular/material/card';
+import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
+import {formatearDatos} from '../../utils/formatear-datos.util';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 @Component({
   selector: 'app-detalle-cripto',
-  imports: [CommonModule, MatButtonModule, RouterLink, BaseChartDirective, MatProgressSpinner, MatCard, MatCardTitle, MatCardContent,],
+  imports: [CommonModule, MatButtonModule, BaseChartDirective, MatProgressSpinner, MatCard, MatCardTitle, MatCardContent, MatCardHeader,],
   templateUrl: './detalle-cripto.component.html',
   styleUrls: ['./detalle-cripto.component.css']
 
@@ -38,36 +40,46 @@ export class DetalleCriptoComponent implements OnInit {
 
   lineChartOptions: ChartOptions<'line'> = {
     responsive: true,
+    interaction: {
+      mode: 'index',
+      intersect: false
+    },
     scales: {
       x: {
         ticks: {
-          color: '#42A5F5',
+          color: '#9bd892',
           font: {
-            size: 15,
+            size: 12,
             weight: 'bold',
           }
         }
       },
-      y: {
-        ticks: {
-          color: '#66BB6A',
-          font: {
-            size: 15,
-            weight: 'bold',
-          }
-        }
+      y1: {
+        type: 'linear',
+        position: 'left',
+        title: { display: true, text: 'Precio (€)' },
+        ticks: { color: '#42a5f5' }
+      },
+      y2: {
+        type: 'linear',
+        position: 'right',
+        title: { display: true, text: 'Capitalización / Volumen (€)' },
+        grid: { drawOnChartArea: false },
+        ticks: { color: '#ffa726' }
       }
     },
     plugins: {
       legend: {
+        display: true,
+        position: 'top',
         labels: {
-          color: '#FF7043'
+          color: '#666'
         }
       }
     }
   };
 
-  lineChartLegend = false;
+  lineChartLegend = true;
   rangoSeleccionado:string = '7'
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;
 
@@ -76,6 +88,7 @@ export class DetalleCriptoComponent implements OnInit {
     private criptoService: CriptoService,
     private route: ActivatedRoute,
     private location: Location,
+    private snackBar:MatSnackBar
   ){}
 
   ngOnInit(): void {
@@ -88,6 +101,11 @@ export class DetalleCriptoComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al cargar detalles de la cripto:', err);
+          this.snackBar.open('Error al cargar los detalles de la cripto', 'Cerrar', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
         }
       });
     }
@@ -111,14 +129,54 @@ export class DetalleCriptoComponent implements OnInit {
   cargarGrafico(rango: string) {
     this.rangoSeleccionado = rango;
 
-    this.criptoService.getHistorialPrecios(this.id, rango).subscribe((res: CriptoGrafica) => {
-      const { labels, data } = this.formatearDatos(res.prices, rango);
+    this.criptoService.getHistorialPrecios(this.id, rango).subscribe({
+      next:(res: CriptoGrafica) => {
+        // const { labels, data } = this.formatearDatos(res.prices, rango);
+        const precios =formatearDatos(res.prices, rango);
+        const capitalizaciones = formatearDatos(res.market_caps, rango);
+        const volumenes = formatearDatos(res.total_volumes,rango);
 
-      this.lineChartData.labels = labels;
-      this.lineChartData.datasets[0].data = data;
 
-      this.chart?.update(); // fuerza render del gráfico
-      this.cargando = false;
+        this.lineChartData.labels = precios.labels;
+        this.lineChartData.datasets = [
+          {
+            data: precios.data,
+            label: 'Precio (€)',
+            borderColor: '#42a5f5',
+            backgroundColor: 'transparent',
+            fill: false,
+            yAxisID: 'y1'
+          },
+          {
+            data: capitalizaciones.data,
+            label: 'Capitalización (€)',
+            borderColor: '#66bb6a',
+            backgroundColor: 'transparent',
+            fill: false,
+            yAxisID: 'y2'
+          },
+          {
+            data: volumenes.data,
+            label: 'Volumen 24h (€)',
+            borderColor: '#ffa726',
+            backgroundColor: 'rgba(255,167,38,0.2)',
+            fill: true,
+            yAxisID: 'y2'
+          }
+        ]
+
+        this.chart?.update(); // fuerza render del gráfico
+        this.cargando = false;
+      },error: (err) => {
+        this.cargando = false;
+        this.snackBar.open('Error al cargar la gráfica. Inténtalo de nuevo más tarde.', 'Cerrar', {
+          duration: 5000,
+          panelClass: 'snackbar-error',
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+        console.error('Error al cargar gráfico:', err);
+      }
     });
   }
 
@@ -130,32 +188,6 @@ export class DetalleCriptoComponent implements OnInit {
       case '365': return 'Precio último año';
       default: return 'Precio histórico';
     }
-  }
-
-  private formatearDatos(prices: number[][], rango:string): {labels:string[], data:number[],}{
-    const labels: string[] = [];
-    const data: number[] = [];
-
-    if(rango === '1') {
-      for (let price of prices){
-        const fecha = new Date(price[0]);
-        labels.push(`${fecha.getHours().toString().padStart(2,'0')}h`)
-        data.push(price[1])
-      }
-    }else if (rango === '7' || rango === '30'){
-      for (let price of prices){
-        const fecha = new Date(price[0]);
-        labels.push(`${fecha.getDate()}/${fecha.getMonth() + 1}`);
-        data.push(price[1]);
-      }
-  }else if (rango === '365') {
-      for (let price of prices) {
-        const fecha = new Date(price[0]);
-        labels.push(`${fecha.getDate()}/${fecha.getMonth() + 1}`);
-        data.push(price[1]);
-      }
-    }
-    return { labels, data };
   }
 
   volver() : void {

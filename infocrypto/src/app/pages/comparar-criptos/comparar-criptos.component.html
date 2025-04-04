@@ -1,0 +1,79 @@
+<div class="detalle-container">
+  <div class="card">
+
+    <h1 style="text-align: center;">Comparador de criptomonedas</h1>
+
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem;">
+      <mat-form-field appearance="outline">
+        <mat-label>Criptomoneda 1</mat-label>
+        <mat-select [(ngModel)]="seleccion1">
+          <mat-option *ngFor="let cripto of criptosDisponibles" [value]="cripto.id">
+            {{ cripto.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Criptomoneda 2</mat-label>
+        <mat-select [(ngModel)]="seleccion2">
+          <mat-option *ngFor="let cripto of criptosDisponibles" [value]="cripto.id">
+            {{ cripto.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Rango</mat-label>
+        <mat-select [(ngModel)]="rangoSeleccionado">
+          <mat-option *ngFor="let r of rangos" [value]="r.valor">{{ r.texto }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="comparar()">Comparar</button>
+    </div>
+
+    <div *ngIf="cargando" class="cargando">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!cargando && detalle1 && detalle2" style="margin-top: 2rem;">
+      <div class="comparacion-cards">
+        <mat-card class="info-extra-card mat-elevation-z3">
+          <mat-card-header>
+            <img mat-card-image [src]="detalle1.image.small" alt="{{ detalle1.name }}" *ngIf="detalle1?.image?.large" class="cripto-avatar">
+            <mat-card-title>{{ detalle1.name }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Precio: {{ detalle1.market_data.current_price.eur | currency:'EUR' }}</p>
+            <p>Capitalización: {{ detalle1.market_data.market_cap.eur | currency:'EUR' }}</p>
+            <p *ngIf="detalle1.genesis_date">Creado en: {{ detalle1.genesis_date }}</p>
+            <p *ngIf="detalle1.tickers?.length">Exchanges: {{ detalle1.tickers.length }}</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="info-extra-card mat-elevation-z3">
+          <mat-card-header>
+            <img mat-card-image [src]="detalle2.image.small" alt="{{ detalle1.name }}" *ngIf="detalle1?.image?.large" class="cripto-avatar">
+            <mat-card-title>{{ detalle2.name }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Precio: {{ detalle2.market_data.current_price.eur | currency:'EUR' }}</p>
+            <p>Capitalización: {{ detalle2.market_data.market_cap.eur | currency:'EUR' }}</p>
+            <p *ngIf="detalle2.genesis_date">Creado en: {{ detalle2.genesis_date }}</p>
+            <p *ngIf="detalle2.tickers?.length">Exchanges: {{ detalle2.tickers.length }}</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div style="margin-top: 2rem;">
+        <h3 style="text-align: center;">Comparación histórica</h3>
+        <canvas baseChart
+                [data]="chartData"
+                [options]="chartOptions"
+                [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
